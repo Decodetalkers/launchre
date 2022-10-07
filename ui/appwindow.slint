@@ -1,0 +1,56 @@
+import { Button, VerticalBox, GridBox , ListView, SpinBox, LineEdit} from "std-widgets.slint";
+export struct MyItem := {
+  title: string,
+  index: int,
+}
+export AppWindow := Window {
+    //property<int> counter: 42;
+    property<[MyItem]> items ;
+    callback request-start-app(int);
+    callback request-fillter(string);
+    callback request-exit();
+    forward-focus: my-key-handler;
+    my-key-handler := FocusScope {
+        key-pressed(event) => {
+            debug(event.text);
+            if (event.modifiers.control) {
+                debug("control was pressed during this event");
+            }
+            if (event.text == Keys.Escape) {
+                request-exit();
+            }
+            if (event.text == Keys.DownArrow) {
+                mainlist.has-focus = true;
+            }
+            accept
+        }
+    }
+    //callback request-increase-value();
+    width: 700px;
+    height: 500px;
+    VerticalBox {
+        LineEdit { 
+            placeholder-text: "世界に革命を起こす力をください";
+            edited(text) => { 
+                request-fillter(text);
+            }
+        }
+        mainlist := ListView {
+            has-focus: true;
+            for item in items : 
+                Button {
+                    HorizontalLayout {
+                        Image {
+                            source: @image-url("../assert/revolution.jpg");
+                            width: 100px;
+                            height: 100px;
+                        }
+                        Text { text: item.title; }
+                    }
+                    clicked => {
+                        request-start-app(item.index);
+                    }
+                }
+        }
+    }
+}
