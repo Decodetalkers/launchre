@@ -7,6 +7,7 @@ fn main() {
     let apps = applications::all_apps();
     let apps = std::rc::Rc::new(apps);
     let apps_filter = apps.clone();
+    let image = ui.get_defaultimage();
     let vec = VecModel::default();
     vec.set_vec(
         apps.iter()
@@ -14,10 +15,16 @@ fn main() {
             .map(|(index, item)| MyItem {
                 title: slint::SharedString::from(item.title()),
                 index: index as i32,
+                description: slint::SharedString::from(item.description()),
+                icon: match item.icon() {
+                    None => image.clone(),
+                    Some(newimage) => newimage.clone(),
+                },
             })
             .collect::<Vec<MyItem>>(),
     );
     let model = std::rc::Rc::new(vec);
+
     ui.set_items(model.into());
     ui.on_request_start_app(move |input: i32| {
         apps[input as usize].launch();
@@ -33,6 +40,11 @@ fn main() {
                 .map(|(index, item)| MyItem {
                     title: slint::SharedString::from(item.title()),
                     index: index as i32,
+                    description: slint::SharedString::from(item.description()),
+                    icon: match item.icon() {
+                        None => image.clone(),
+                        Some(newimage) => newimage.clone(),
+                    },
                 })
                 .collect::<Vec<MyItem>>(),
         );

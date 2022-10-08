@@ -1,18 +1,24 @@
 import { Button, VerticalBox, GridBox , ListView, SpinBox, LineEdit} from "std-widgets.slint";
 export struct MyItem := {
   title: string,
+  description: string,
+  icon: image,
   index: int,
 }
 export AppWindow := Window {
     //property<int> counter: 42;
     property<[MyItem]> items ;
+    property <image> defaultimage : @image-url("../assert/revolution.png") ;
     callback request-start-app(int);
     callback request-fillter(string);
     callback request-exit();
+    width: 1000px;
+    height: 700px;
+    no-frame: true;
     forward-focus: my-key-handler;
     my-key-handler := FocusScope {
         key-pressed(event) => {
-            debug(event.text);
+            //debug(event.text);
             if (event.modifiers.control) {
                 debug("control was pressed during this event");
             }
@@ -25,27 +31,46 @@ export AppWindow := Window {
             accept
         }
     }
-    //callback request-increase-value();
-    width: 700px;
-    height: 500px;
     VerticalBox {
-        LineEdit { 
-            placeholder-text: "世界に革命を起こす力をください";
-            edited(text) => { 
-                request-fillter(text);
+        HorizontalLayout {
+            LineEdit { 
+                placeholder-text: "世界に革命を起こす力をください";
+                edited(text) => { 
+                    request-fillter(text);
+                    image.rotation-angle = image.rotation-angle + 1deg;
+                }
+            }
+            image := Image {
+                source: root.defaultimage;
+                width: 35px;
+                height: 35px;
+                rotation-angle: 0deg;
             }
         }
         mainlist := ListView {
-            has-focus: true;
-            for item in items : 
+            for item in items :
                 Button {
                     HorizontalLayout {
-                        Image {
-                            source: @image-url("../assert/revolution.jpg");
-                            width: 100px;
-                            height: 100px;
+                        VerticalBox {
+                            spacing: 10px;
+                            Image {
+                                source: item.icon;
+                                width: 100px;
+                                height: 100px;
+                            }
                         }
-                        Text { text: item.title; }
+                        VerticalBox {
+                            Text {
+                                text: item.title;
+                                font-weight: 10;
+                                font-size: 20px;
+                            }
+                            Text { 
+                                text: item.description;
+                                font-weight: 1;
+                                font-size: 10px;
+                            }
+                        }
                     }
                     clicked => {
                         request-start-app(item.index);

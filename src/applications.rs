@@ -1,17 +1,20 @@
 use gio::prelude::*;
 use gio::{AppInfo, AppLaunchContext};
 //use once_cell::sync::Lazy;
-
+use slint::Image;
 #[allow(dead_code)]
 pub struct App {
     appinfo: AppInfo,
     name: String,
-    discriptions: Option<gio::glib::GString>,
+    descriptions: Option<gio::glib::GString>,
     categrades: Option<Vec<String>>,
+    icon: Option<Image>,
 }
 impl App {
     pub fn launch(&self) {
-        self.appinfo.launch(&[], None::<&AppLaunchContext>).unwrap();
+        if let Err(err) = self.appinfo.launch(&[], None::<&AppLaunchContext>) {
+            println!("{}", err.to_string());
+        };
         slint::quit_event_loop().unwrap();
     }
     #[allow(dead_code)]
@@ -31,15 +34,62 @@ impl App {
     pub fn is_name_match(&self, input: &str) -> bool {
         let re = regex::Regex::new(&input.to_lowercase()).unwrap();
         re.is_match(&self.name.to_lowercase()) || {
-            match &self.discriptions {
+            match &self.descriptions {
                 None => false,
-                Some(description) => re.is_match(description),
+                Some(description) => re.is_match(&description.to_lowercase()),
             }
         }
     }
     pub fn title(&self) -> &str {
         &self.name
     }
+    pub fn description(&self) -> &str {
+        match &self.descriptions {
+            None => "",
+            Some(description) => description,
+        }
+    }
+    pub fn icon(&self) -> &Option<Image> {
+        &self.icon
+    }
+}
+fn get_icon_path(iconname: &str) -> Option<Image> {
+    if iconname.contains('/') {
+        let path = std::path::Path::new(iconname);
+        return match Image::load_from_path(path) {
+            Ok(image) => Some(image),
+            Err(_) => None,
+        };
+    }
+    let svg = format!("/usr/share/icons/hicolor/scalable/apps/{}.svg", iconname);
+    let svgpath = std::path::Path::new(&svg);
+    if svgpath.exists() {
+        return match Image::load_from_path(svgpath) {
+            Ok(image) => Some(image),
+            Err(_) => None,
+        };
+    }
+
+    let paths = ["256x256", "128x128"];
+    for path in paths {
+        let icon = format!("/usr/share/icons/hicolor/{}/apps/{}.png", path, iconname);
+        let iconpath = std::path::Path::new(&icon);
+        if iconpath.exists() {
+            return match Image::load_from_path(iconpath) {
+                Ok(image) => Some(image),
+                Err(_) => None,
+            };
+        }
+    }
+    let pix = format!("/usr/share/pixmaps/{}.png", iconname);
+    let pixpath = std::path::Path::new(&pix);
+    if pixpath.exists() {
+        return match Image::load_from_path(pixpath) {
+            Ok(image) => Some(image),
+            Err(_) => None,
+        };
+    }
+    None
 }
 #[allow(dead_code)]
 pub fn all_categrades(apps: Vec<App>) -> Vec<String> {
@@ -62,7 +112,7 @@ pub fn all_apps() -> Vec<App> {
         .map(|app| App {
             appinfo: app.clone(),
             name: app.name().to_string(),
-            discriptions: app.description(),
+            descriptions: app.description(),
             categrades: match app.clone().downcast::<gio::DesktopAppInfo>() {
                 Err(_) => None,
                 Ok(item) => {
@@ -78,6 +128,13 @@ pub fn all_apps() -> Vec<App> {
                         }
                     }
                     //None
+                }
+            },
+            icon: match &app.icon() {
+                None => None,
+                Some(icon) => {
+                    let iconname = gio::prelude::IconExt::to_string(icon).unwrap();
+                    get_icon_path(iconname.as_str())
                 }
             },
         })
