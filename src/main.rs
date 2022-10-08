@@ -39,7 +39,7 @@ fn main() {
                         vec.set_vec(
                             categrades
                                 .iter()
-                                .map(|unit| slint::SharedString::from(unit))
+                                .map(slint::SharedString::from)
                                 .collect::<Vec<slint::SharedString>>(),
                         );
                     }
@@ -96,7 +96,7 @@ fn main() {
                             vec.set_vec(
                                 categrades
                                     .iter()
-                                    .map(|unit| slint::SharedString::from(unit))
+                                    .map(slint::SharedString::from)
                                     .collect::<Vec<slint::SharedString>>(),
                             );
                         }
