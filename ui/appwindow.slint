@@ -1,9 +1,11 @@
-import { Button, VerticalBox, GridBox , ListView, SpinBox, LineEdit} from "std-widgets.slint";
+import { Button, VerticalBox, GridBox , ListView, ScrollView,SpinBox, LineEdit, HorizontalBox, StandardListView} from "std-widgets.slint";
 export struct MyItem := {
   title: string,
   description: string,
   icon: image,
   index: int,
+  supported_types: [StandardListViewItem],
+  categrades: [string]
 }
 export AppWindow := Window {
     //property<int> counter: 42;
@@ -50,58 +52,99 @@ export AppWindow := Window {
             accept
         }
     }
-    VerticalBox {
-        HorizontalLayout {
-            searchline := LineEdit { 
-                placeholder-text: "世界に革命を起こす力をください";
-                edited(text) => { 
-                    request-fillter(text);
-                    image.rotation-angle = image.rotation-angle + 1deg;
-                    
+    HorizontalBox {
+        VerticalBox {
+            HorizontalLayout {
+                searchline := LineEdit { 
+                    placeholder-text: "世界に革命を起こす力をください";
+                    edited(text) => {
+                        request-fillter(text);
+                        mainlist.current-item = -1;
+                        mainlist.current-selected = -1;
+                        image.rotation-angle = image.rotation-angle + 1deg;
+                    }
+                }
+                image := Image {
+                    source: root.defaultimage;
+                    width: 35px;
+                    height: 35px;
+                    rotation-angle: 0deg;
                 }
             }
-            image := Image {
-                source: root.defaultimage;
-                width: 35px;
-                height: 35px;
-                rotation-angle: 0deg;
+            mainlist := ListView {
+                has-focus:true;
+                property <int> current-item : -1 ;
+                property <int> current-selected: -1;
+                for item[idx] in items : Rectangle {
+                    background: idx == mainlist.current-item ? Colors.grey 
+                        : touch.has-hover ? Colors.dimgrey
+                        : Colors.white;
+                    HorizontalLayout {
+                        VerticalBox {
+                            spacing: 10px;
+                            Image {
+                                source: item.icon;
+                                width: 100px;
+                                height: 100px;
+                            }
+                        }
+                        VerticalBox {
+                            Text {
+                                text: item.title;
+                                font-weight: 10;
+                                font-size: 20px;
+                            }
+                            Text { 
+                                text: item.description;
+                                font-weight: 1;
+                                font-size: 10px;
+                            }
+                        }
+                    }
+                    touch := TouchArea {
+                        width: parent.width;
+                        height: parent.height;
+                        clicked => {
+                            request-start-app(item.index);
+                        }
+                    }
+                }
             }
         }
-        mainlist := ListView {
-            has-focus:true;
-            property <int> current-item : -1 ;
-            property <int> current-selected: -1;
-            for item in items : Rectangle {
-                background: item.index == mainlist.current-item ? Colors.grey 
-                    : touch.has-hover ? Colors.dimgrey
-                    : Colors.white;
-                HorizontalLayout {
-                    VerticalBox {
-                        spacing: 10px;
-                        Image {
-                            source: item.icon;
-                            width: 100px;
-                            height: 100px;
+        VerticalBox {
+            spacing: 3px;
+            visible: mainlist.current-item >= 0;
+            width: mainlist.current-item >= 0 ? 250px : 0;
+            Image { 
+                source: mainlist.current-item >= 0 ? items[mainlist.current-item].icon : root.defaultimage;
+                //height: mainlist.current-item >= 0 ? 70px : 0;
+            }
+            Text {
+                text: "supported types";
+                horizontal-alignment: center;
+                font-size: 20px;
+                font-weight: 5;
+            }
+            if mainlist.current-item >=0 :  StandardListView{
+                model:items[mainlist.current-item].supported_types;
+            }
+            Text { 
+                text: "Categrades";
+                horizontal-alignment: center;
+                font-size: 20px;
+                font-weight: 5;
+            }
+            if mainlist.current-item >= 0 : ScrollView {
+                height: 70px;
+                HorizontalBox {  
+                    for cat in items[mainlist.current-item].categrades : Rectangle {
+                        background: Colors.pink;
+                        border-radius: 15px;
+                        HorizontalBox { 
+                            Image { source: root.defaultimage; height: 20px; width: 20px; }
+                            Text { text: cat; }
+                            
                         }
-                    }
-                    VerticalBox {
-                        Text {
-                            text: item.title;
-                            font-weight: 10;
-                            font-size: 20px;
-                        }
-                        Text { 
-                            text: item.description;
-                            font-weight: 1;
-                            font-size: 10px;
-                        }
-                    }
-                }
-                touch := TouchArea {
-                    width: parent.width;
-                    height: parent.height;
-                    clicked => {
-                        request-start-app(item.index);
                     }
                 }
             }

@@ -20,6 +20,31 @@ fn main() {
                     None => image.clone(),
                     Some(newimage) => newimage.clone(),
                 },
+                supported_types: {
+                    let vec = VecModel::default();
+                    vec.set_vec(
+                        item.supported_types()
+                            .iter()
+                            .map(|unit| slint::StandardListViewItem {
+                                text: slint::SharedString::from(unit.to_string()),
+                            })
+                            .collect::<Vec<slint::StandardListViewItem>>(),
+                    );
+                    slint::ModelRc::new(vec)
+                    //vec.into()
+                },
+                categrades: {
+                    let vec = VecModel::default();
+                    if let Some(ref categrades) = item.categrades {
+                        vec.set_vec(
+                            categrades
+                                .iter()
+                                .map(|unit| slint::SharedString::from(unit))
+                                .collect::<Vec<slint::SharedString>>(),
+                        );
+                    }
+                    slint::ModelRc::new(vec)
+                },
             })
             .collect::<Vec<MyItem>>(),
     );
@@ -51,6 +76,31 @@ fn main() {
                     icon: match item.icon() {
                         None => image.clone(),
                         Some(newimage) => newimage.clone(),
+                    },
+                    supported_types: {
+                        let vec = VecModel::default();
+                        vec.set_vec(
+                            item.supported_types()
+                                .iter()
+                                .map(|unit| slint::StandardListViewItem {
+                                    text: slint::SharedString::from(unit.to_string()),
+                                })
+                                .collect::<Vec<slint::StandardListViewItem>>(),
+                        );
+                        slint::ModelRc::new(vec)
+                        //vec.into()
+                    },
+                    categrades: {
+                        let vec = VecModel::default();
+                        if let Some(ref categrades) = item.categrades {
+                            vec.set_vec(
+                                categrades
+                                    .iter()
+                                    .map(|unit| slint::SharedString::from(unit))
+                                    .collect::<Vec<slint::SharedString>>(),
+                            );
+                        }
+                        slint::ModelRc::new(vec)
                     },
                 })
                 .collect::<Vec<MyItem>>(),

@@ -7,7 +7,7 @@ pub struct App {
     appinfo: AppInfo,
     name: String,
     descriptions: Option<gio::glib::GString>,
-    categrades: Option<Vec<String>>,
+    pub categrades: Option<Vec<String>>,
     icon: Option<Image>,
 }
 impl App {
@@ -54,6 +54,9 @@ impl App {
     }
     pub fn icon(&self) -> &Option<Image> {
         &self.icon
+    }
+    pub fn supported_types(&self) -> Vec<gio::glib::GString> {
+        self.appinfo.supported_types()
     }
 }
 fn get_icon_path(iconname: &str) -> Option<Image> {
