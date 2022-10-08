@@ -81,8 +81,16 @@ fn get_icon_path(iconname: &str) -> Option<Image> {
             };
         }
     }
-    let pix = format!("/usr/share/pixmaps/{}.png", iconname);
-    let pixpath = std::path::Path::new(&pix);
+    let pixsvg = format!("/usr/share/pixmaps/{}.svg", iconname);
+    let pixpath = std::path::Path::new(&pixsvg);
+    if pixpath.exists() {
+        return match Image::load_from_path(pixpath) {
+            Ok(image) => Some(image),
+            Err(_) => None,
+        };
+    }
+    let pixpng = format!("/usr/share/pixmaps/{}.png", iconname);
+    let pixpath = std::path::Path::new(&pixpng);
     if pixpath.exists() {
         return match Image::load_from_path(pixpath) {
             Ok(image) => Some(image),
