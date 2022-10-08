@@ -59,6 +59,7 @@ export AppWindow := Window {
                     placeholder-text: "世界に革命を起こす力をください";
                     edited(text) => {
                         request-fillter(text);
+                        mainlist.viewport-y = 0;
                         mainlist.current-item = -1;
                         mainlist.current-selected = -1;
                         image.rotation-angle = image.rotation-angle + 1deg;
