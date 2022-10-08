@@ -24,7 +24,6 @@ export AppWindow := Window {
     forward-focus: my-key-handler;
     my-key-handler := FocusScope {
         key-pressed(event) => {
-            //debug(event.text);
             if (event.modifiers.control) {
                 debug("control was pressed during this event");
             }
@@ -46,8 +45,11 @@ export AppWindow := Window {
                 mainlist.current-item = items.length - 1;
                 mainlist.viewport-y = -1 * mainlist.current-item * 112px;
                 mainlist.current-selected = items[mainlist.current-item].index;
-            } else if (event.text == Keys.Return) {
+            } else if (event.text == Keys.Return && mainlist.current-selected != -1 )  {
                 request-start-app(mainlist.current-selected);
+            // use space to search
+            } else if (event.text == " " || event.text == Keys.Backspace) {
+                searchline.focus();
             }
             accept
         }
@@ -63,6 +65,9 @@ export AppWindow := Window {
                         mainlist.current-item = -1;
                         mainlist.current-selected = -1;
                         image.rotation-angle = image.rotation-angle + 1deg;
+                    }
+                    accepted => { 
+                        root.focus();
                     }
                 }
                 image := Image {
@@ -128,6 +133,15 @@ export AppWindow := Window {
             }
             if mainlist.current-item >=0 :  StandardListView{
                 model:items[mainlist.current-item].supported_types;
+                forward-focus: key-handle;
+                key-handle := FocusScope { 
+                    key-pressed(event) => {
+                        if (event.text == Keys.Escape) {
+                            root.focus();
+                        }
+                        accept
+                    }
+                }
             }
             Text { 
                 text: "Categrades";
@@ -144,7 +158,6 @@ export AppWindow := Window {
                         HorizontalBox { 
                             Image { source: root.defaultimage; height: 20px; width: 20px; }
                             Text { text: cat; }
-                            
                         }
                     }
                 }
