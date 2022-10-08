@@ -123,6 +123,7 @@ pub fn all_apps() -> Vec<App> {
     let re = regex::Regex::new(r"([a-zA-Z]+);").unwrap();
     gio::AppInfo::all()
         .iter()
+        .filter(|app| app.should_show())
         .map(|app| App {
             appinfo: app.clone(),
             name: app.name().to_string(),
