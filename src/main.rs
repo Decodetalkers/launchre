@@ -31,6 +31,13 @@ fn main() {
     });
     let ui_handle = ui.as_weak();
     ui.on_request_fillter(move |input: slint::SharedString| {
+        let ui = ui_handle.unwrap();
+        let input = if regex::Regex::new(&input.to_lowercase()).is_err() {
+            ui.invoke_reset_lineedit();
+            "".to_string()
+        } else {
+            input.to_string()
+        };
         let vec = VecModel::default();
         vec.set_vec(
             apps_filter
@@ -49,7 +56,6 @@ fn main() {
                 .collect::<Vec<MyItem>>(),
         );
         let model = std::rc::Rc::new(vec);
-        let ui = ui_handle.unwrap();
         ui.set_items(model.into());
     });
     ui.on_request_exit(|| {

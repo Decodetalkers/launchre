@@ -12,6 +12,10 @@ export AppWindow := Window {
     callback request-start-app(int);
     callback request-fillter(string);
     callback request-exit();
+    callback reset-lineedit();
+    reset-lineedit => { 
+        searchline.text = "";
+    }
     width: 1000px;
     height: 700px;
     no-frame: true;
@@ -24,16 +28,18 @@ export AppWindow := Window {
             }
             if (event.text == Keys.Escape) {
                 request-exit();
-            }
-            if (event.text == Keys.DownArrow) {
+            } else if (event.text == Keys.DownArrow) {
                 mainlist.has-focus = true;
+            } else {
+                searchline.accessible-delegate-focus = 1;
+                mainlist.accessible-delegate-focus = 1;
             }
             accept
         }
     }
     VerticalBox {
         HorizontalLayout {
-            LineEdit { 
+            searchline := LineEdit { 
                 placeholder-text: "世界に革命を起こす力をください";
                 edited(text) => { 
                     request-fillter(text);

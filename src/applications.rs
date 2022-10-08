@@ -13,7 +13,7 @@ pub struct App {
 impl App {
     pub fn launch(&self) {
         if let Err(err) = self.appinfo.launch(&[], None::<&AppLaunchContext>) {
-            println!("{}", err.to_string());
+            println!("{}", err);
         };
         slint::quit_event_loop().unwrap();
     }
@@ -31,8 +31,11 @@ impl App {
             }
         }
     }
-    pub fn is_name_match(&self, input: &str) -> bool {
-        let re = regex::Regex::new(&input.to_lowercase()).unwrap();
+    pub fn is_name_match<T>(&self, input: T) -> bool
+    where
+        T: ToString,
+    {
+        let re = regex::Regex::new(&input.to_string().to_lowercase()).unwrap();
         re.is_match(&self.name.to_lowercase()) || {
             match &self.descriptions {
                 None => false,

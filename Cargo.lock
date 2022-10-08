@@ -1659,17 +1659,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "launchre"
-version = "0.1.0"
-dependencies = [
- "gio",
- "once_cell",
- "regex",
- "slint",
- "slint-build",
-]
-
-[[package]]
 name = "lazy-bytes-cast"
 version = "5.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3174,6 +3163,18 @@ dependencies = [
  "unicode-script",
  "unicode-vo",
  "xmlwriter",
+]
+
+[[package]]
+name = "utena"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "gio",
+ "once_cell",
+ "regex",
+ "slint",
+ "slint-build",
 ]
 
 [[package]]

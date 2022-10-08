@@ -1,5 +1,5 @@
 [package]
-name = "launchre"
+name = "utena"
 version = "0.1.0"
 authors = ["ShootingStarDragons <ShootingStarDragons@protonmail.com>"]
 edition = "2021"
@@ -12,7 +12,7 @@ slint = "0.3"
 gio = "0.15.12"
 regex = "1"
 once_cell = "1.15.0"
-
+anyhow = "1.0.65"
 
 [build-dependencies]
 slint-build = "0.3"
