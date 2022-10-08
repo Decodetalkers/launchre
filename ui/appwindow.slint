@@ -28,11 +28,24 @@ export AppWindow := Window {
             }
             if (event.text == Keys.Escape) {
                 request-exit();
-            } else if (event.text == Keys.DownArrow) {
-                mainlist.has-focus = true;
-            } else {
-                searchline.accessible-delegate-focus = 1;
-                mainlist.accessible-delegate-focus = 1;
+            } else if (event.text == Keys.DownArrow && mainlist.current-item + 1 < items.length) {
+                mainlist.current-item += 1;
+                mainlist.viewport-y = -1 * mainlist.current-item * 112px;
+                mainlist.current-selected = items[mainlist.current-item].index;
+            } else if (event.text == Keys.DownArrow && mainlist.current-item + 1 == items.length) {
+                mainlist.current-item = 0;
+                mainlist.viewport-y = 0;
+                mainlist.current-selected = items[mainlist.current-item].index;
+            } else if (event.text == Keys.UpArrow && mainlist.current-item > 0) {
+                mainlist.current-item -= 1;
+                mainlist.viewport-y = -1 * mainlist.current-item * 112px;
+                mainlist.current-selected = items[mainlist.current-item].index;
+            } else if (event.text == Keys.UpArrow && mainlist.current-item == 0) {
+                mainlist.current-item = items.length - 1;
+                mainlist.viewport-y = -1 * mainlist.current-item * 112px;
+                mainlist.current-selected = items[mainlist.current-item].index;
+            } else if (event.text == Keys.Return) {
+                request-start-app(mainlist.current-selected);
             }
             accept
         }
@@ -44,6 +57,7 @@ export AppWindow := Window {
                 edited(text) => { 
                     request-fillter(text);
                     image.rotation-angle = image.rotation-angle + 1deg;
+                    
                 }
             }
             image := Image {
@@ -54,34 +68,41 @@ export AppWindow := Window {
             }
         }
         mainlist := ListView {
-            for item in items :
-                Button {
-                    HorizontalLayout {
-                        VerticalBox {
-                            spacing: 10px;
-                            Image {
-                                source: item.icon;
-                                width: 100px;
-                                height: 100px;
-                            }
-                        }
-                        VerticalBox {
-                            Text {
-                                text: item.title;
-                                font-weight: 10;
-                                font-size: 20px;
-                            }
-                            Text { 
-                                text: item.description;
-                                font-weight: 1;
-                                font-size: 10px;
-                            }
+            has-focus:true;
+            property <int> current-item : -1 ;
+            property <int> current-selected: -1;
+            for item in items : Rectangle {
+                background: item.index == mainlist.current-item ? Colors.grey : Colors.white;
+                HorizontalLayout {
+                    VerticalBox {
+                        spacing: 10px;
+                        Image {
+                            source: item.icon;
+                            width: 100px;
+                            height: 100px;
                         }
                     }
+                    VerticalBox {
+                        Text {
+                            text: item.title;
+                            font-weight: 10;
+                            font-size: 20px;
+                        }
+                        Text { 
+                            text: item.description;
+                            font-weight: 1;
+                            font-size: 10px;
+                        }
+                    }
+                }
+                TouchArea {
+                    width: parent.width;
+                    height: parent.height;
                     clicked => {
                         request-start-app(item.index);
                     }
                 }
+            }
         }
     }
 }
