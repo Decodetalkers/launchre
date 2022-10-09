@@ -55,8 +55,6 @@ export AppWindow := Window {
                 } else {
                     request-start-app-with-action(mainlist.current-selected, items[mainlist.current-item].actionchoosed);
                 }
-                //request-start-app(mainlist.current-selected);
-            // use space to search
             } else if (event.text == " " || event.text == Keys.Backspace) {
                 searchline.focus();
             }
@@ -115,14 +113,7 @@ export AppWindow := Window {
                                 font-weight: 1;
                                 font-size: 10px;
                             }
-                            ComboBox {
-                                visible: item.hasactions == true;
-                                height: item.hasactions == true ? 35px : 0px;
-                                model: item.actions;
-                                selected(text) => {
-                                    item.actionchoosed = text;
-                                }
-                            }
+
                         }
                     }
                     touch := TouchArea {
@@ -145,6 +136,37 @@ export AppWindow := Window {
             width:  250px ;
             Image { 
                 source: items[mainlist.current-item].icon ;
+            }
+            if items[mainlist.current-item].hasactions == true : Text {
+                text: "actions";
+                horizontal-alignment: center;
+                font-size: 20px;
+                font-weight: 5;
+            }
+            HorizontalBox {
+                visible: items[mainlist.current-item].hasactions == true;
+                height: items[mainlist.current-item].hasactions == true ? 35px : 0px;
+                ComboBox {
+                    height: 35px;
+                    //visible: items[mainlist.current-item].hasactions == true;
+                    //height: items[mainlist.current-item].hasactions == true ? 35px : 0px;
+                    model: items[mainlist.current-item].actions;
+                    selected(text) => {
+                        items[mainlist.current-item].actionchoosed = text;
+                    }
+                }
+                Button { 
+                    text: "Run";
+                    width: 40px;
+                    height: 35px;
+                    clicked => { 
+                        if (items[mainlist.current-item].actionchoosed == "default") {
+                            request-start-app(mainlist.current-selected);
+                        } else {
+                            request-start-app-with-action(mainlist.current-selected, items[mainlist.current-item].actionchoosed);
+                        }
+                    }
+                }
             }
             Text {
                 text: "supported types";
