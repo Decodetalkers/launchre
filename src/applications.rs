@@ -2,7 +2,6 @@ use gio::prelude::*;
 use gio::{AppInfo, AppLaunchContext};
 //use once_cell::sync::Lazy;
 use slint::Image;
-#[allow(dead_code)]
 pub struct App {
     appinfo: AppInfo,
     name: String,
@@ -18,7 +17,6 @@ impl App {
         };
         slint::quit_event_loop().unwrap();
     }
-    #[allow(dead_code)]
     pub fn launch_with_action(&self, action: &str) {
         self.appinfo
             .clone()

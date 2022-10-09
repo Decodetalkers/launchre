@@ -1,8 +1,29 @@
 use slint::VecModel;
-
+use zbus::blocking::ConnectionBuilder;
+use zbus::dbus_interface;
+use zbus::Result;
 slint::include_modules!();
 mod applications;
-fn main() {
+struct Utena;
+#[dbus_interface(name = "org.revolution.utena")]
+impl Utena {}
+fn main() -> Result<()> {
+    match ConnectionBuilder::session()?
+        .name("org.revolution.utena")?
+        .serve_at("/org/revolution/utena", Utena)?
+        .build()
+    {
+        Ok(_) => {
+            start_ui();
+            Ok(())
+        }
+        Err(_) => {
+            println!("Another session is running");
+            Ok(())
+        }
+    }
+}
+fn start_ui() {
     let ui = AppWindow::new();
     let apps = applications::all_apps();
     let apps = std::rc::Rc::new(apps);

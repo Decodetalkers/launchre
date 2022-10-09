@@ -3175,6 +3175,7 @@ dependencies = [
  "regex",
  "slint",
  "slint-build",
+ "zbus",
 ]
 
 [[package]]
