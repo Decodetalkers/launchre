@@ -117,13 +117,12 @@ export AppWindow := Window {
                 }
             }
         }
-        VerticalBox {
+       if mainlist.current-item >= 0 :  VerticalBox {
             spacing: 3px;
             visible: mainlist.current-item >= 0;
-            width: mainlist.current-item >= 0 ? 250px : 0;
+            width:  250px ;
             Image { 
-                source: mainlist.current-item >= 0 ? items[mainlist.current-item].icon : root.defaultimage;
-                //height: mainlist.current-item >= 0 ? 70px : 0;
+                source: items[mainlist.current-item].icon ;
             }
             Text {
                 text: "supported types";
@@ -131,7 +130,7 @@ export AppWindow := Window {
                 font-size: 20px;
                 font-weight: 5;
             }
-            if mainlist.current-item >=0 :  StandardListView{
+            StandardListView{
                 model:items[mainlist.current-item].supported_types;
                 forward-focus: key-handle;
                 key-handle := FocusScope { 
@@ -149,7 +148,7 @@ export AppWindow := Window {
                 font-size: 20px;
                 font-weight: 5;
             }
-            if mainlist.current-item >= 0 : ScrollView {
+            ScrollView {
                 height: 70px;
                 HorizontalBox {  
                     for cat in items[mainlist.current-item].categrades : Rectangle {
