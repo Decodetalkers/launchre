@@ -1,4 +1,4 @@
-import { Button, VerticalBox, GridBox , ComboBox,ListView, ScrollView,SpinBox, LineEdit, HorizontalBox, StandardListView} from "std-widgets.slint";
+import { Button, VerticalBox, GridBox , ComboBox,ListView, ScrollView,SpinBox, LineEdit, HorizontalBox, StandardListView, CheckBox} from "std-widgets.slint";
 export struct MyItem := {
     title: string,
     description: string,
@@ -10,13 +10,19 @@ export struct MyItem := {
     actions:[string],
     actionchoosed: string,
 }
+struct Cats := {
+    cat: string,
+    selected: bool,
+}
 export AppWindow := Window {
     //property<int> counter: 42;
     property<[MyItem]> items ;
-    property <image> defaultimage : @image-url("../assert/revolution.png") ;
+    property <[Cats]> cats ;
+    property <image> defaultimage : @image-url("../assert/revolution.png");
     callback request-start-app(int);
     callback request-start-app-with-action(int,string);
     callback request-fillter(string);
+    callback request-fillter-with-cats(string, [Cats]);
     callback request-exit();
     callback reset-lineedit();
     reset-lineedit => { 
@@ -66,9 +72,14 @@ export AppWindow := Window {
             HorizontalLayout {
                 searchline := LineEdit { 
                     placeholder-text: "世界に革命を起こす力をください";
-                    font-size: 25px;
+                    font-size: 20px;
                     edited(text) => {
-                        request-fillter(text);
+                        // if is advanced
+                        if(check.checked) {
+                            request-fillter-with-cats(text,cats);
+                        } else {
+                            request-fillter(text);
+                        }
                         mainlist.viewport-y = 0;
                         mainlist.current-item = -1;
                         mainlist.current-selected = -1;
@@ -78,11 +89,86 @@ export AppWindow := Window {
                         root.focus();
                     }
                 }
+                check := CheckBox { 
+                    text: "advanced";
+                    checked: false;
+                    width: 100px;
+                    toggled => { 
+                        if (check.checked) {
+                            request-fillter-with-cats(searchline.text,cats);
+                        } else {
+                            request-fillter(searchline.text);
+                        }
+                        mainlist.viewport-y = 0;
+                        mainlist.current-item = -1;
+                        mainlist.current-selected = -1;
+                    }
+                }
                 image := Image {
                     source: root.defaultimage;
                     width: 45px;
                     height: 45px;
                     rotation-angle: 0deg;
+                }
+            }
+            if check.checked : HorizontalBox {
+                ScrollView {
+                    height: 70px;
+                    HorizontalBox {
+                        spacing: 0px;
+                        for cat in cats  : Rectangle {
+                            visible: cat.selected;
+                            border-width: 2px;
+                            width: !cat.selected? 0px : 150px;
+                            background: Colors.pink;
+                            border-radius: !cat.selected ? 0px : 15px;
+                            border-color: Colors.transparent;
+                            if cat.selected : HorizontalBox { 
+                                Image { source: root.defaultimage; height: 20px; width: 20px; }
+                                Text { text: cat.cat; }
+                            }
+                            if cat.selected : TouchArea {
+                                width: parent.width;
+                                height: parent.height;
+                                clicked => {
+                                    cat.selected = false;
+                                    request-fillter-with-cats(searchline.text,cats);
+                                    mainlist.viewport-y = 0;
+                                    mainlist.current-item = -1;
+                                    mainlist.current-selected = -1;
+                                }
+                            }
+                        }
+                    }
+                }
+                ScrollView { 
+                    height: 70px;
+                    HorizontalBox {
+                        spacing: 0px;
+                        for cat in cats  : Rectangle {
+                            visible: !cat.selected;
+                            border-width: 2px;
+                            border-color: Colors.transparent;
+                            width: cat.selected ? 0px : 150px;
+                            background: Colors.grey;
+                            border-radius: cat.selected ? 0px : 15px;
+                            if !cat.selected : HorizontalBox { 
+                                Image { source: root.defaultimage; height: 20px; width: 20px; }
+                                Text { text: cat.cat; }
+                            }
+                            if !cat.selected : TouchArea {
+                                width: parent.width;
+                                height: parent.height;
+                                clicked => {
+                                    cat.selected = true;
+                                    request-fillter-with-cats(searchline.text,cats);
+                                    mainlist.viewport-y = 0;
+                                    mainlist.current-item = -1;
+                                    mainlist.current-selected = -1;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             mainlist := ListView {

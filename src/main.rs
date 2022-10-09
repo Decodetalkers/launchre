@@ -1,3 +1,4 @@
+use slint::Model;
 use slint::VecModel;
 use zbus::blocking::ConnectionBuilder;
 use zbus::dbus_interface;
@@ -25,73 +26,94 @@ fn main() -> Result<()> {
 }
 fn start_ui() {
     let ui = AppWindow::new();
-    let apps = applications::all_apps();
-    let apps = std::rc::Rc::new(apps);
+    let apps_origin = applications::all_apps();
+    let cats = applications::all_categrades(&apps_origin);
+    let apps = std::rc::Rc::new(apps_origin);
     let apps2 = apps.clone();
     let apps_filter = apps.clone();
+    let apps_filter2 = apps.clone();
     let image = ui.get_defaultimage();
-    let vec = VecModel::default();
-    vec.set_vec(
-        apps.iter()
-            .enumerate()
-            .map(|(index, item)| MyItem {
-                title: slint::SharedString::from(item.title()),
-                index: index as i32,
-                description: slint::SharedString::from(item.description()),
-                icon: match item.icon() {
-                    None => image.clone(),
-                    Some(newimage) => newimage.clone(),
-                },
-                supported_types: {
-                    let vec = VecModel::default();
-                    vec.set_vec(
-                        item.supported_types()
-                            .iter()
-                            .map(|unit| slint::StandardListViewItem {
-                                text: slint::SharedString::from(unit.to_string()),
-                            })
-                            .collect::<Vec<slint::StandardListViewItem>>(),
-                    );
-                    slint::ModelRc::new(vec)
-                    //vec.into()
-                },
-                categrades: {
-                    let vec = VecModel::default();
-                    if let Some(ref categrades) = item.categrades {
+    let image2 = image.clone();
+    // apps
+    {
+        let vec = VecModel::default();
+        vec.set_vec(
+            apps.iter()
+                .enumerate()
+                .map(|(index, item)| MyItem {
+                    title: slint::SharedString::from(item.title()),
+                    index: index as i32,
+                    description: slint::SharedString::from(item.description()),
+                    icon: match item.icon() {
+                        None => image.clone(),
+                        Some(newimage) => newimage.clone(),
+                    },
+                    supported_types: {
+                        let vec = VecModel::default();
                         vec.set_vec(
-                            categrades
+                            item.supported_types()
                                 .iter()
-                                .map(slint::SharedString::from)
-                                .collect::<Vec<slint::SharedString>>(),
+                                .map(|unit| slint::StandardListViewItem {
+                                    text: slint::SharedString::from(unit.to_string()),
+                                })
+                                .collect::<Vec<slint::StandardListViewItem>>(),
                         );
-                    }
-                    slint::ModelRc::new(vec)
-                },
-                hasactions: item.actions.is_some(),
-                actions: {
-                    let vec = VecModel::default();
-                    let actions = match &item.actions {
-                        None => vec![],
-                        Some(ref actions) => {
-                            let mut action = vec![slint::SharedString::from("default")];
-                            let mut others = actions
-                                .iter()
-                                .map(|anaction| slint::SharedString::from(anaction.to_string()))
-                                .collect::<Vec<slint::SharedString>>();
-                            action.append(&mut others);
-                            action
+                        slint::ModelRc::new(vec)
+                        //vec.into()
+                    },
+                    categrades: {
+                        let vec = VecModel::default();
+                        if let Some(ref categrades) = item.categrades {
+                            vec.set_vec(
+                                categrades
+                                    .iter()
+                                    .map(slint::SharedString::from)
+                                    .collect::<Vec<slint::SharedString>>(),
+                            );
                         }
-                    };
-                    vec.set_vec(actions);
-                    slint::ModelRc::new(vec)
-                },
-                actionchoosed: slint::SharedString::from("default"),
-            })
-            .collect::<Vec<MyItem>>(),
-    );
-    let model = std::rc::Rc::new(vec);
+                        slint::ModelRc::new(vec)
+                    },
+                    hasactions: item.actions.is_some(),
+                    actions: {
+                        let vec = VecModel::default();
+                        let actions = match &item.actions {
+                            None => vec![],
+                            Some(ref actions) => {
+                                let mut action = vec![slint::SharedString::from("default")];
+                                let mut others = actions
+                                    .iter()
+                                    .map(|anaction| slint::SharedString::from(anaction.to_string()))
+                                    .collect::<Vec<slint::SharedString>>();
+                                action.append(&mut others);
+                                action
+                            }
+                        };
+                        vec.set_vec(actions);
+                        slint::ModelRc::new(vec)
+                    },
+                    actionchoosed: slint::SharedString::from("default"),
+                })
+                .collect::<Vec<MyItem>>(),
+        );
+        let model = std::rc::Rc::new(vec);
+        ui.set_items(model.into());
+    }
 
-    ui.set_items(model.into());
+    // categrades
+    {
+        let vec = VecModel::default();
+        vec.set_vec(
+            cats.iter()
+                .map(|cat| Cats {
+                    cat: slint::SharedString::from(cat),
+                    selected: false,
+                })
+                .collect::<Vec<Cats>>(),
+        );
+        let model = std::rc::Rc::new(vec);
+        ui.set_cats(model.into());
+    }
+
     ui.on_request_start_app(move |input: i32| {
         apps[input as usize].launch();
     });
@@ -99,6 +121,7 @@ fn start_ui() {
         apps2[index as usize].launch_with_action(&action);
     });
     let ui_handle = ui.as_weak();
+    // fillter
     ui.on_request_fillter(move |input: slint::SharedString| {
         let ui = ui_handle.unwrap();
         let input = if regex::Regex::new(&input.to_lowercase()).is_err() {
@@ -119,6 +142,86 @@ fn start_ui() {
                     description: slint::SharedString::from(item.description()),
                     icon: match item.icon() {
                         None => image.clone(),
+                        Some(newimage) => newimage.clone(),
+                    },
+                    supported_types: {
+                        let vec = VecModel::default();
+                        vec.set_vec(
+                            item.supported_types()
+                                .iter()
+                                .map(|unit| slint::StandardListViewItem {
+                                    text: slint::SharedString::from(unit.to_string()),
+                                })
+                                .collect::<Vec<slint::StandardListViewItem>>(),
+                        );
+                        slint::ModelRc::new(vec)
+                        //vec.into()
+                    },
+                    categrades: {
+                        let vec = VecModel::default();
+                        if let Some(ref categrades) = item.categrades {
+                            vec.set_vec(
+                                categrades
+                                    .iter()
+                                    .map(slint::SharedString::from)
+                                    .collect::<Vec<slint::SharedString>>(),
+                            );
+                        }
+                        slint::ModelRc::new(vec)
+                    },
+                    hasactions: item.actions.is_some(),
+                    actions: {
+                        let vec = VecModel::default();
+                        let actions = match &item.actions {
+                            None => vec![],
+                            Some(actions) => {
+                                let mut action = vec![slint::SharedString::from("default")];
+                                let mut others = actions
+                                    .iter()
+                                    .map(|anaction| slint::SharedString::from(anaction.to_string()))
+                                    .collect::<Vec<slint::SharedString>>();
+                                action.append(&mut others);
+                                action
+                            }
+                        };
+                        vec.set_vec(actions);
+                        slint::ModelRc::new(vec)
+                    },
+                    actionchoosed: slint::SharedString::from("default"),
+                })
+                .collect::<Vec<MyItem>>(),
+        );
+        let model = std::rc::Rc::new(vec);
+        ui.set_items(model.into());
+    });
+    let ui_handle = ui.as_weak();
+
+    // fillter with categrades
+    ui.on_request_fillter_with_cats(move |keyword, cats| {
+        let cats = cats
+            .iter()
+            .filter(|cat| cat.selected)
+            .map(|cat| cat.cat.to_string())
+            .collect::<Vec<String>>();
+        let ui = ui_handle.unwrap();
+        let input = if regex::Regex::new(&keyword.to_lowercase()).is_err() {
+            ui.invoke_reset_lineedit();
+            "".to_string()
+        } else {
+            keyword.to_string()
+        };
+        let vec = VecModel::default();
+        vec.set_vec(
+            apps_filter2
+                .iter()
+                .enumerate()
+                .filter(|(_, item)| item.is_name_match(&input) && item.is_incategrade(&cats))
+                .map(|(index, item)| MyItem {
+                    title: slint::SharedString::from(item.title()),
+                    index: index as i32,
+                    description: slint::SharedString::from(item.description()),
+                    icon: match item.icon() {
+                        None => image2.clone(),
                         Some(newimage) => newimage.clone(),
                     },
                     supported_types: {

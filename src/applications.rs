@@ -25,8 +25,8 @@ impl App {
             .launch_action(action, None::<&AppLaunchContext>);
         slint::quit_event_loop().unwrap();
     }
-    #[allow(dead_code)]
-    pub fn is_incategrade(&self, cats: Vec<&str>) -> bool {
+    // if is in categrade
+    pub fn is_incategrade(&self, cats: &Vec<String>) -> bool {
         match self.categrades {
             None => false,
             Some(ref categrade) => {
@@ -113,20 +113,21 @@ fn get_icon_path(iconname: &str) -> Option<Image> {
     }
     None
 }
-#[allow(dead_code)]
-pub fn all_categrades(apps: Vec<App>) -> Vec<String> {
-    let mut cats = vec![];
+// return categrade
+pub fn all_categrades(apps: &Vec<App>) -> Vec<String> {
+    let mut cats: Vec<String> = vec![];
     for app in apps {
-        if let Some(cat) = app.categrades {
+        if let Some(cat) = &app.categrades {
             for acat in cat {
-                if !cats.contains(&acat) {
-                    cats.push(acat);
+                if !cats.contains(acat) {
+                    cats.push(acat.to_string());
                 }
             }
         }
     }
     cats
 }
+// return all apps
 pub fn all_apps() -> Vec<App> {
     let re = regex::Regex::new(r"([a-zA-Z]+);").unwrap();
     gio::AppInfo::all()
@@ -161,7 +162,7 @@ pub fn all_apps() -> Vec<App> {
                         None
                     } else {
                         Some(actions)
-                    }
+                   }
                 }, //None
             },
             icon: match &app.icon() {
