@@ -1,4 +1,4 @@
-# Launcher Revolution utena
+# Launcher Revolution Utena
 
 It is a launcher for sway, also my Revolution.
 
