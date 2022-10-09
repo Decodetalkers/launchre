@@ -1,11 +1,11 @@
 import { Button, VerticalBox, GridBox , ListView, ScrollView,SpinBox, LineEdit, HorizontalBox, StandardListView} from "std-widgets.slint";
 export struct MyItem := {
-  title: string,
-  description: string,
-  icon: image,
-  index: int,
-  supported_types: [StandardListViewItem],
-  categrades: [string]
+    title: string,
+    description: string,
+    icon: image,
+    index: int,
+    supported_types: [StandardListViewItem],
+    categrades: [string]
 }
 export AppWindow := Window {
     //property<int> counter: 42;
@@ -59,6 +59,7 @@ export AppWindow := Window {
             HorizontalLayout {
                 searchline := LineEdit { 
                     placeholder-text: "世界に革命を起こす力をください";
+                    font-size: 25px;
                     edited(text) => {
                         request-fillter(text);
                         mainlist.viewport-y = 0;
@@ -72,8 +73,8 @@ export AppWindow := Window {
                 }
                 image := Image {
                     source: root.defaultimage;
-                    width: 35px;
-                    height: 35px;
+                    width: 45px;
+                    height: 45px;
                     rotation-angle: 0deg;
                 }
             }
