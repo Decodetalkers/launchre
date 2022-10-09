@@ -92,7 +92,7 @@ export AppWindow := Window {
                 for item[idx] in items : Rectangle {
                     background: idx == mainlist.current-item ? Colors.grey 
                         : touch.has-hover ? Colors.dimgrey
-                        : Colors.white;
+                        : root.background;
                     HorizontalLayout {
                         VerticalBox {
                             spacing: 10px;
