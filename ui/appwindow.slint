@@ -148,6 +148,7 @@ export AppWindow := Window {
                 height: items[mainlist.current-item].hasactions == true ? 35px : 0px;
                 ComboBox {
                     height: 35px;
+                    current-value: items[mainlist.current-item].actionchoosed;
                     //visible: items[mainlist.current-item].hasactions == true;
                     //height: items[mainlist.current-item].hasactions == true ? 35px : 0px;
                     model: items[mainlist.current-item].actions;
