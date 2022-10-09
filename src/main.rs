@@ -75,7 +75,7 @@ fn main() {
         apps[input as usize].launch();
     });
     ui.on_request_start_app_with_action(move |index: i32, action: slint::SharedString| {
-        apps2[index as usize].launch_with_action(&action.to_string());
+        apps2[index as usize].launch_with_action(&action);
     });
     let ui_handle = ui.as_weak();
     ui.on_request_fillter(move |input: slint::SharedString| {
