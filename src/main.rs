@@ -6,6 +6,7 @@ fn main() {
     let ui = AppWindow::new();
     let apps = applications::all_apps();
     let apps = std::rc::Rc::new(apps);
+    let apps2 = apps.clone();
     let apps_filter = apps.clone();
     let image = ui.get_defaultimage();
     let vec = VecModel::default();
@@ -45,6 +46,25 @@ fn main() {
                     }
                     slint::ModelRc::new(vec)
                 },
+                hasactions: item.actions.is_some(),
+                actions: {
+                    let vec = VecModel::default();
+                    let actions = match &item.actions {
+                        None => vec![],
+                        Some(ref actions) => {
+                            let mut action = vec![slint::SharedString::from("default")];
+                            let mut others = actions
+                                .iter()
+                                .map(|anaction| slint::SharedString::from(anaction.to_string()))
+                                .collect::<Vec<slint::SharedString>>();
+                            action.append(&mut others);
+                            action
+                        }
+                    };
+                    vec.set_vec(actions);
+                    slint::ModelRc::new(vec)
+                },
+                actionchoosed: slint::SharedString::from("default"),
             })
             .collect::<Vec<MyItem>>(),
     );
@@ -53,6 +73,9 @@ fn main() {
     ui.set_items(model.into());
     ui.on_request_start_app(move |input: i32| {
         apps[input as usize].launch();
+    });
+    ui.on_request_start_app_with_action(move |index: i32, action: slint::SharedString| {
+        apps2[index as usize].launch_with_action(&action.to_string());
     });
     let ui_handle = ui.as_weak();
     ui.on_request_fillter(move |input: slint::SharedString| {
@@ -102,6 +125,25 @@ fn main() {
                         }
                         slint::ModelRc::new(vec)
                     },
+                    hasactions: item.actions.is_some(),
+                    actions: {
+                        let vec = VecModel::default();
+                        let actions = match &item.actions {
+                            None => vec![],
+                            Some(actions) => {
+                                let mut action = vec![slint::SharedString::from("default")];
+                                let mut others = actions
+                                    .iter()
+                                    .map(|anaction| slint::SharedString::from(anaction.to_string()))
+                                    .collect::<Vec<slint::SharedString>>();
+                                action.append(&mut others);
+                                action
+                            }
+                        };
+                        vec.set_vec(actions);
+                        slint::ModelRc::new(vec)
+                    },
+                    actionchoosed: slint::SharedString::from("default"),
                 })
                 .collect::<Vec<MyItem>>(),
         );

@@ -1,17 +1,21 @@
-import { Button, VerticalBox, GridBox , ListView, ScrollView,SpinBox, LineEdit, HorizontalBox, StandardListView} from "std-widgets.slint";
+import { Button, VerticalBox, GridBox , ComboBox,ListView, ScrollView,SpinBox, LineEdit, HorizontalBox, StandardListView} from "std-widgets.slint";
 export struct MyItem := {
     title: string,
     description: string,
     icon: image,
     index: int,
     supported_types: [StandardListViewItem],
-    categrades: [string]
+    categrades: [string],
+    hasactions: bool,
+    actions:[string],
+    actionchoosed: string,
 }
 export AppWindow := Window {
     //property<int> counter: 42;
     property<[MyItem]> items ;
     property <image> defaultimage : @image-url("../assert/revolution.png") ;
     callback request-start-app(int);
+    callback request-start-app-with-action(int,string);
     callback request-fillter(string);
     callback request-exit();
     callback reset-lineedit();
@@ -46,7 +50,12 @@ export AppWindow := Window {
                 mainlist.viewport-y = -1 * mainlist.current-item * 112px;
                 mainlist.current-selected = items[mainlist.current-item].index;
             } else if (event.text == Keys.Return && mainlist.current-selected != -1 )  {
-                request-start-app(mainlist.current-selected);
+                if (items[mainlist.current-item].actionchoosed == "default") {
+                    request-start-app(mainlist.current-selected);
+                } else {
+                    request-start-app-with-action(mainlist.current-selected, items[mainlist.current-item].actionchoosed);
+                }
+                //request-start-app(mainlist.current-selected);
             // use space to search
             } else if (event.text == " " || event.text == Keys.Backspace) {
                 searchline.focus();
@@ -106,13 +115,25 @@ export AppWindow := Window {
                                 font-weight: 1;
                                 font-size: 10px;
                             }
+                            ComboBox {
+                                visible: item.hasactions == true;
+                                height: item.hasactions == true ? 35px : 0px;
+                                model: item.actions;
+                                selected(text) => {
+                                    item.actionchoosed = text;
+                                }
+                            }
                         }
                     }
                     touch := TouchArea {
                         width: parent.width;
-                        height: parent.height;
+                        height: 70px;
                         clicked => {
-                            request-start-app(item.index);
+                            if (item.actionchoosed == "default") {
+                                request-start-app(item.index);
+                            } else {
+                                request-start-app-with-action(item.index, item.actionchoosed);
+                            }
                         }
                     }
                 }

@@ -8,6 +8,7 @@ pub struct App {
     name: String,
     descriptions: Option<gio::glib::GString>,
     pub categrades: Option<Vec<String>>,
+    pub actions: Option<Vec<gio::glib::GString>>,
     icon: Option<Image>,
 }
 impl App {
@@ -15,6 +16,15 @@ impl App {
         if let Err(err) = self.appinfo.launch(&[], None::<&AppLaunchContext>) {
             println!("{}", err);
         };
+        slint::quit_event_loop().unwrap();
+    }
+    #[allow(dead_code)]
+    pub fn launch_with_action(&self, action: &str) {
+        self.appinfo
+            .clone()
+            .downcast::<gio::DesktopAppInfo>()
+            .unwrap()
+            .launch_action(action, None::<&AppLaunchContext>);
         slint::quit_event_loop().unwrap();
     }
     #[allow(dead_code)]
@@ -144,6 +154,17 @@ pub fn all_apps() -> Vec<App> {
                     }
                     //None
                 }
+            },
+            actions: match app.clone().downcast::<gio::DesktopAppInfo>() {
+                Err(_) => None,
+                Ok(item) => {
+                    let actions = item.list_actions();
+                    if actions.is_empty() {
+                        None
+                    } else {
+                        Some(actions)
+                    }
+                }, //None
             },
             icon: match &app.icon() {
                 None => None,
