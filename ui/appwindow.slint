@@ -119,9 +119,9 @@ export AppWindow := Window {
                         for cat in cats  : Rectangle {
                             visible: cat.selected;
                             border-width: 2px;
-                            width: !cat.selected? 0px : 150px;
+                            width: cat.selected ? 160px : 0px;
                             background: Colors.pink;
-                            border-radius: !cat.selected ? 0px : 15px;
+                            border-radius: cat.selected ? 15px : 0px;
                             border-color: Colors.transparent;
                             if cat.selected : HorizontalBox { 
                                 Image { source: root.defaultimage; height: 20px; width: 20px; }
@@ -149,7 +149,7 @@ export AppWindow := Window {
                             visible: !cat.selected;
                             border-width: 2px;
                             border-color: Colors.transparent;
-                            width: cat.selected ? 0px : 150px;
+                            width: cat.selected ? 0px : 160px;
                             background: Colors.grey;
                             border-radius: cat.selected ? 0px : 15px;
                             if !cat.selected : HorizontalBox { 
