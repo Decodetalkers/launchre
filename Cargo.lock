@@ -768,6 +768,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "21d8ad60dd5b13a4ee6bd8fa2d5d88965c597c67bce32b5fc49c94f55cb50810"
 
 [[package]]
+name = "deunicode"
+version = "1.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08ff6a4480d42625e59bc4e8b5dc3723279fd24d83afe8aa20df217276261cd6"
+
+[[package]]
 name = "dirs"
 version = "4.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3170,6 +3176,7 @@ name = "utena"
 version = "0.3.1"
 dependencies = [
  "anyhow",
+ "deunicode",
  "gio",
  "once_cell",
  "regex",

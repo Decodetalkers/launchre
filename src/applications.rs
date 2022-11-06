@@ -44,12 +44,17 @@ impl App {
         T: ToString,
     {
         let re = regex::Regex::new(&input.to_string().to_lowercase()).unwrap();
-        re.is_match(&self.name.to_lowercase()) || {
-            match &self.descriptions {
-                None => false,
-                Some(description) => re.is_match(&description.to_lowercase()),
+        re.is_match(&self.name.to_lowercase())
+            || re.is_match(&deunicode::deunicode(&self.name).to_lowercase())
+            || {
+                match &self.descriptions {
+                    None => false,
+                    Some(description) => {
+                        re.is_match(&description.to_lowercase())
+                            || re.is_match(&deunicode::deunicode(&description).to_lowercase())
+                    }
+                }
             }
-        }
     }
     pub fn title(&self) -> &str {
         &self.name
@@ -162,8 +167,8 @@ pub fn all_apps() -> Vec<App> {
                         None
                     } else {
                         Some(actions)
-                   }
-                }, //None
+                    }
+                } //None
             },
             icon: match &app.icon() {
                 None => None,
@@ -175,6 +180,7 @@ pub fn all_apps() -> Vec<App> {
         })
         .collect()
 }
+
 #[test]
 fn split() {
     let re = regex::Regex::new(r"([a-zA-Z]+);").unwrap();
@@ -184,4 +190,11 @@ fn split() {
         .map(|unit| unit.get(1).unwrap().as_str())
         .collect();
     assert_eq!(vec!["Categrade", "beta"], tips);
+}
+
+#[test]
+fn unicode() {
+    let re = regex::Regex::new("ce shi").unwrap();
+    println!("{}", deunicode::deunicode("測試"));
+    assert!(re.is_match(&deunicode::deunicode("測試").to_lowercase()));
 }
