@@ -9,10 +9,10 @@ build = "build.rs"
 
 [dependencies]
 slint = "0.3"
-gio = "0.15.12"
+gio = "0.16.3"
 regex = "1"
-once_cell = "1.15.0"
-anyhow = "1.0.65"
+once_cell = "1.16.0"
+anyhow = "1.0.66"
 zbus = "3"
 deunicode = "1.3.2"
 
