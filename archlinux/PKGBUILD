@@ -11,9 +11,10 @@ source=('source.tar.gz')
 sha512sums=('SKIP')
 
 build() {
-  meson build \
+  meson setup \
     -Dprefix=/usr \
-    -Dbuildtype=release
+    -Dbuildtype=release \
+    build
   ninja -C build
 }
 
