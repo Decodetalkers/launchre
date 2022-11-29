@@ -15,7 +15,6 @@ struct Cats := {
     selected: bool,
 }
 export AppWindow := Window {
-    //property<int> counter: 42;
     property<[MyItem]> items ;
     property <[Cats]> cats ;
     property <image> defaultimage : @image-url("../assert/revolution.png");
@@ -37,31 +36,31 @@ export AppWindow := Window {
             if (event.modifiers.control) {
                 debug("control was pressed during this event");
             }
-            if (event.text == Keys.Escape) {
+            if (event.text == Key.Escape) {
                 request-exit();
-            } else if (event.text == Keys.DownArrow && mainlist.current-item + 1 < items.length) {
+            } else if (event.text == Key.DownArrow && mainlist.current-item + 1 < items.length) {
                 mainlist.current-item += 1;
                 mainlist.viewport-y = -1 * mainlist.current-item * 112px;
                 mainlist.current-selected = items[mainlist.current-item].index;
-            } else if (event.text == Keys.DownArrow && mainlist.current-item + 1 == items.length) {
+            } else if (event.text == Key.DownArrow && mainlist.current-item + 1 == items.length) {
                 mainlist.current-item = 0;
                 mainlist.viewport-y = 0;
                 mainlist.current-selected = items[mainlist.current-item].index;
-            } else if (event.text == Keys.UpArrow && mainlist.current-item > 0) {
+            } else if (event.text == Key.UpArrow && mainlist.current-item > 0) {
                 mainlist.current-item -= 1;
                 mainlist.viewport-y = -1 * mainlist.current-item * 112px;
                 mainlist.current-selected = items[mainlist.current-item].index;
-            } else if (event.text == Keys.UpArrow && mainlist.current-item == 0) {
+            } else if (event.text == Key.UpArrow && mainlist.current-item == 0) {
                 mainlist.current-item = items.length - 1;
                 mainlist.viewport-y = -1 * mainlist.current-item * 112px;
                 mainlist.current-selected = items[mainlist.current-item].index;
-            } else if (event.text == Keys.Return && mainlist.current-selected != -1 )  {
+            } else if (event.text == Key.Return && mainlist.current-selected != -1 )  {
                 if (items[mainlist.current-item].actionchoosed == "default") {
                     request-start-app(mainlist.current-selected);
                 } else {
                     request-start-app-with-action(mainlist.current-selected, items[mainlist.current-item].actionchoosed);
                 }
-            } else if (event.text == " " || event.text == Keys.Backspace) {
+            } else if (event.text == " " || event.text == Key.Backspace) {
                 searchline.focus();
             }
             accept
@@ -266,7 +265,7 @@ export AppWindow := Window {
                 forward-focus: key-handle;
                 key-handle := FocusScope { 
                     key-pressed(event) => {
-                        if (event.text == Keys.Escape) {
+                        if (event.text == Key.Escape) {
                             root.focus();
                         }
                         accept
