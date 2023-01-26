@@ -8,11 +8,11 @@ build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-slint = "0.3.3"
+slint = "0.3.4"
 gio = "0.16.7"
 regex = "1"
-once_cell = "1.16.0"
-anyhow = "1.0.66"
+once_cell = "1.17.0"
+anyhow = "1.0.68"
 zbus = "3"
 deunicode = "1.3.3"
 
