@@ -50,7 +50,7 @@ impl App {
                 match &self.descriptions {
                     None => false,
                     Some(description) => {
-                        re.is_match(&description.to_lowercase())
+                        re.is_match(description.to_lowercase())
                             || re.is_match(&deunicode::deunicode(&description).to_lowercase())
                     }
                 }
