@@ -1,5 +1,5 @@
 import { Button, VerticalBox, GridBox , ComboBox,ListView, ScrollView,SpinBox, LineEdit, HorizontalBox, StandardListView, CheckBox} from "std-widgets.slint";
-export struct MyItem := {
+export struct MyItem {
     title: string,
     description: string,
     icon: image,
@@ -10,22 +10,27 @@ export struct MyItem := {
     actions:[string],
     actionchoosed: string,
 }
-struct Cats := {
+struct Cats {
     cat: string,
     selected: bool,
 }
-export AppWindow := Window {
+
+export component AppWindow inherits Window {
     property <[MyItem]> items ;
-    property <[Cats]> cats ;
-    property <image> defaultimage : @image-url("../assert/revolution.png");
+    in property <[Cats]> cats ;
+    in property <image> defaultimage : @image-url("../assert/revolution.png");
     callback request-start-app(int);
     callback request-start-app-with-action(int,string);
     callback request-fillter(string);
     callback request-fillter-with-cats(string, [Cats]);
     callback request-exit();
     callback reset-lineedit();
-    reset-lineedit => { 
+    reset-lineedit => {
         searchline.text = "";
+    }
+    callback setItems([MyItem]);
+    setItems(input) => {
+        items = input
     }
     width: 1000px;
     height: 700px;
@@ -72,21 +77,26 @@ export AppWindow := Window {
                 searchline := LineEdit { 
                     placeholder-text: "世界に革命を起こす力をください";
                     font-size: 20px;
-                    edited(text) => {
+                    edited => {
                         // if is advanced
                         if(check.checked) {
-                            request-fillter-with-cats(text,cats);
+                            request-fillter-with-cats(self.text,cats);
                         } else {
-                            request-fillter(text);
+                            request-fillter(self.text);
                         }
                         mainlist.viewport-y = 0;
                         mainlist.current-item = -1;
                         mainlist.current-selected = -1;
                         image.rotation-angle = image.rotation-angle + 1deg;
+                        return;
                     }
                     accepted => {
                         root.focus();
+                        return;
                     }
+                    //accepted => {
+                    //    root.focus();
+                    //}
                 }
                 check := CheckBox {
                     text: "advanced";
@@ -219,7 +229,7 @@ export AppWindow := Window {
             spacing: 3px;
             visible: mainlist.current-item >= 0;
             width:  250px ;
-            Image { 
+            Image {
                 source: items[mainlist.current-item].icon ;
             }
             if items[mainlist.current-item].hasactions == true : Text {
@@ -239,11 +249,11 @@ export AppWindow := Window {
                         items[mainlist.current-item].actionchoosed = text;
                     }
                 }
-                Button { 
+                Button {
                     text: "Run";
                     width: 40px;
                     height: 35px;
-                    clicked => { 
+                    clicked => {
                         if (items[mainlist.current-item].actionchoosed == "default") {
                             request-start-app(mainlist.current-selected);
                         } else {

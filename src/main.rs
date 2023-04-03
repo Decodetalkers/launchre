@@ -25,7 +25,7 @@ fn main() -> Result<()> {
     }
 }
 fn start_ui() {
-    let ui = AppWindow::new();
+    let ui = AppWindow::new().unwrap();
     let apps_origin = applications::all_apps();
     let cats = applications::all_categrades(&apps_origin);
     let apps = std::rc::Rc::new(apps_origin);
@@ -53,8 +53,10 @@ fn start_ui() {
                         vec.set_vec(
                             item.supported_types()
                                 .iter()
-                                .map(|unit| slint::StandardListViewItem {
-                                    text: slint::SharedString::from(unit.to_string()),
+                                .map(|unit| {
+                                    slint::StandardListViewItem::from(slint::SharedString::from(
+                                        unit.to_string(),
+                                    ))
                                 })
                                 .collect::<Vec<slint::StandardListViewItem>>(),
                         );
@@ -96,7 +98,7 @@ fn start_ui() {
                 .collect::<Vec<MyItem>>(),
         );
         let model = std::rc::Rc::new(vec);
-        ui.set_items(model.into());
+        ui.invoke_setItems(model.into());
     }
 
     // categrades
@@ -149,8 +151,10 @@ fn start_ui() {
                         vec.set_vec(
                             item.supported_types()
                                 .iter()
-                                .map(|unit| slint::StandardListViewItem {
-                                    text: slint::SharedString::from(unit.to_string()),
+                                .map(|unit| {
+                                    slint::StandardListViewItem::from(slint::SharedString::from(
+                                        unit.to_string(),
+                                    ))
                                 })
                                 .collect::<Vec<slint::StandardListViewItem>>(),
                         );
@@ -192,7 +196,7 @@ fn start_ui() {
                 .collect::<Vec<MyItem>>(),
         );
         let model = std::rc::Rc::new(vec);
-        ui.set_items(model.into());
+        ui.invoke_setItems(model.into());
     });
     let ui_handle = ui.as_weak();
 
@@ -229,8 +233,10 @@ fn start_ui() {
                         vec.set_vec(
                             item.supported_types()
                                 .iter()
-                                .map(|unit| slint::StandardListViewItem {
-                                    text: slint::SharedString::from(unit.to_string()),
+                                .map(|unit| {
+                                    slint::StandardListViewItem::from(slint::SharedString::from(
+                                        unit.to_string(),
+                                    ))
                                 })
                                 .collect::<Vec<slint::StandardListViewItem>>(),
                         );
@@ -272,10 +278,10 @@ fn start_ui() {
                 .collect::<Vec<MyItem>>(),
         );
         let model = std::rc::Rc::new(vec);
-        ui.set_items(model.into());
+        ui.invoke_setItems(model.into());
     });
     ui.on_request_exit(|| {
         slint::quit_event_loop().unwrap();
     });
-    ui.run();
+    ui.run().unwrap();
 }
