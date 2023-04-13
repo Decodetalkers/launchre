@@ -94,15 +94,12 @@ export component AppWindow inherits Window {
                         root.focus();
                         return;
                     }
-                    //accepted => {
-                    //    root.focus();
-                    //}
                 }
                 check := CheckBox {
                     text: "advanced";
                     checked: false;
                     width: 100px;
-                    toggled => { 
+                    toggled => {
                         if (check.checked) {
                             request-fillter-with-cats(searchline.text,cats);
                         } else {
@@ -288,7 +285,7 @@ export component AppWindow inherits Window {
             }
             ScrollView {
                 height: 70px;
-                HorizontalBox {  
+                HorizontalBox {
                     for cat in items[mainlist.current-item].categrades : Rectangle {
                         background: Colors.pink;
                         border-radius: 15px;

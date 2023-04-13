@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use gio::prelude::*;
 use gio::{AppInfo, AppLaunchContext};
 //use once_cell::sync::Lazy;
@@ -72,6 +74,46 @@ impl App {
         self.appinfo.supported_types()
     }
 }
+
+static ICONS_SIZE: &[&str] = &["256x256", "128x128"];
+
+static THEMES_LIST: &[&str] = &["breeze", "Adwaita"];
+
+fn get_icon_path_from_xdgicon(iconname: &str) -> Option<PathBuf> {
+    let scalable_icon_path =
+        xdg::BaseDirectories::with_prefix("icons/hicolor/scalable/apps").unwrap();
+    if let Some(iconpath) = scalable_icon_path.find_data_file(format!("{iconname}.svg")) {
+        return Some(iconpath);
+    }
+    for prefix in ICONS_SIZE {
+        let iconpath =
+            xdg::BaseDirectories::with_prefix(&format!("icons/hicolor/{prefix}/apps")).unwrap();
+        if let Some(iconpath) = iconpath.find_data_file(format!("{iconname}.png")) {
+            return Some(iconpath);
+        }
+    }
+    let pixmappath = xdg::BaseDirectories::with_prefix("pixmaps").unwrap();
+    if let Some(iconpath) = pixmappath.find_data_file(format!("{iconname}.svg")) {
+        return Some(iconpath);
+    }
+    if let Some(iconpath) = pixmappath.find_data_file(format!("{iconname}.png")) {
+        return Some(iconpath);
+    }
+    for themes in THEMES_LIST {
+        let iconpath =
+            xdg::BaseDirectories::with_prefix(&format!("icons/{themes}/apps/48")).unwrap();
+        if let Some(iconpath) = iconpath.find_data_file(format!("{iconname}.svg")) {
+            return Some(iconpath);
+        }
+        let iconpath =
+            xdg::BaseDirectories::with_prefix(&format!("icons/{themes}/apps/64")).unwrap();
+        if let Some(iconpath) = iconpath.find_data_file(format!("{iconname}.svg")) {
+            return Some(iconpath);
+        }
+    }
+    None
+}
+
 fn get_icon_path(iconname: &str) -> Option<Image> {
     if iconname.contains('/') {
         let path = std::path::Path::new(iconname);
@@ -80,38 +122,8 @@ fn get_icon_path(iconname: &str) -> Option<Image> {
             Err(_) => None,
         };
     }
-    let svg = format!("/usr/share/icons/hicolor/scalable/apps/{}.svg", iconname);
-    let svgpath = std::path::Path::new(&svg);
-    if svgpath.exists() {
-        return match Image::load_from_path(svgpath) {
-            Ok(image) => Some(image),
-            Err(_) => None,
-        };
-    }
-
-    let paths = ["256x256", "128x128"];
-    for path in paths {
-        let icon = format!("/usr/share/icons/hicolor/{}/apps/{}.png", path, iconname);
-        let iconpath = std::path::Path::new(&icon);
-        if iconpath.exists() {
-            return match Image::load_from_path(iconpath) {
-                Ok(image) => Some(image),
-                Err(_) => None,
-            };
-        }
-    }
-    let pixsvg = format!("/usr/share/pixmaps/{}.svg", iconname);
-    let pixpath = std::path::Path::new(&pixsvg);
-    if pixpath.exists() {
-        return match Image::load_from_path(pixpath) {
-            Ok(image) => Some(image),
-            Err(_) => None,
-        };
-    }
-    let pixpng = format!("/usr/share/pixmaps/{}.png", iconname);
-    let pixpath = std::path::Path::new(&pixpng);
-    if pixpath.exists() {
-        return match Image::load_from_path(pixpath) {
+    if let Some(pixpath) = get_icon_path_from_xdgicon(iconname) {
+        return match Image::load_from_path(&pixpath) {
             Ok(image) => Some(image),
             Err(_) => None,
         };
