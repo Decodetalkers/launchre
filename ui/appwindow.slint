@@ -225,7 +225,7 @@ export component AppWindow inherits Window {
         if mainlist.current-item >= 0 :  VerticalBox {
             spacing: 3px;
             visible: mainlist.current-item >= 0;
-            width:  250px ;
+            width:  270px ;
             Image {
                 source: items[mainlist.current-item].icon ;
             }
@@ -248,7 +248,7 @@ export component AppWindow inherits Window {
                 }
                 Button {
                     text: "Run";
-                    width: 40px;
+                    width: 70px;
                     height: 35px;
                     clicked => {
                         if (items[mainlist.current-item].actionchoosed == "default") {
