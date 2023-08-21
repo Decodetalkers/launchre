@@ -284,4 +284,5 @@ fn start_ui() {
         slint::quit_event_loop().unwrap();
     });
     ui.run().unwrap();
+    std::thread::sleep(std::time::Duration::from_secs(1));
 }

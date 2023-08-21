@@ -21,11 +21,8 @@ impl App {
         slint::quit_event_loop().unwrap();
     }
     pub fn launch_with_action(&self, action: &str) {
-        self.appinfo
-            .clone()
-            .downcast::<gio::DesktopAppInfo>()
-            .unwrap()
-            .launch_action(action, None::<&AppLaunchContext>);
+        self.appinfo.launch_action(action, AppLaunchContext::NONE);
+
         slint::quit_event_loop().unwrap();
     }
     // if is in categrade
