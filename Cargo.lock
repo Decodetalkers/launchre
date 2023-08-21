@@ -3764,7 +3764,7 @@ dependencies = [
 
 [[package]]
 name = "utena"
-version = "0.3.9"
+version = "0.4.1"
 dependencies = [
  "anyhow",
  "deunicode",
