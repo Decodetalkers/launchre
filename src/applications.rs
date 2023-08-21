@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 
 use gio::prelude::*;
-use gio::{AppInfo, AppLaunchContext};
+use gio::{AppLaunchContext, DesktopAppInfo};
 //use once_cell::sync::Lazy;
 use slint::Image;
 pub struct App {
-    appinfo: AppInfo,
+    appinfo: DesktopAppInfo,
     name: String,
     descriptions: Option<gio::glib::GString>,
     pub categrades: Option<Vec<String>>,
@@ -14,9 +14,10 @@ pub struct App {
 }
 impl App {
     pub fn launch(&self) {
-        if let Err(err) = self.appinfo.launch(&[], None::<&AppLaunchContext>) {
+        if let Err(err) = self.appinfo.launch(&[], AppLaunchContext::NONE) {
             println!("{}", err);
         };
+
         slint::quit_event_loop().unwrap();
     }
     pub fn launch_with_action(&self, action: &str) {
@@ -149,7 +150,8 @@ pub fn all_apps() -> Vec<App> {
     let re = regex::Regex::new(r"([a-zA-Z]+);").unwrap();
     gio::AppInfo::all()
         .iter()
-        .filter(|app| app.should_show())
+        .filter(|app| app.should_show() && app.downcast_ref::<gio::DesktopAppInfo>().is_some())
+        .map(|app| app.clone().downcast::<gio::DesktopAppInfo>().unwrap())
         .map(|app| App {
             appinfo: app.clone(),
             name: app.name().to_string(),
