@@ -14,7 +14,6 @@ pub struct App {
 }
 impl App {
     pub fn launch(&self) {
-        let _ =self.appinfo.remove_supports_type("DBusActivatable");
         if let Err(err) = self.appinfo.launch(&[], AppLaunchContext::NONE) {
             println!("{}", err);
         };
