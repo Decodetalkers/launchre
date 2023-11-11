@@ -1,7 +1,7 @@
 project(
   'utena',
   'rust',
-  version: '0.3.9',
+  version: '0.4.5',
   license: 'MIT',
   meson_version: '>= 0.59'
 )
