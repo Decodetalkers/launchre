@@ -153,33 +153,24 @@ pub fn all_apps() -> Vec<App> {
             appinfo: app.clone(),
             name: app.name().to_string(),
             descriptions: app.description(),
-            categrades: match app.clone().downcast::<gio::DesktopAppInfo>() {
-                Err(_) => None,
-                Ok(item) => {
-                    match item.categories() {
-                        None => None,
-                        Some(categrades) => {
-                            let tomatch = categrades.to_string();
-                            let tips = re
-                                .captures_iter(&tomatch)
-                                .map(|unit| unit.get(1).unwrap().as_str().to_string())
-                                .collect();
-                            Some(tips)
-                        }
-                    }
-                    //None
+            categrades: match app.categories() {
+                None => None,
+                Some(categrades) => {
+                    let tomatch = categrades.to_string();
+                    let tips = re
+                        .captures_iter(&tomatch)
+                        .map(|unit| unit.get(1).unwrap().as_str().to_string())
+                        .collect();
+                    Some(tips)
                 }
             },
-            actions: match app.clone().downcast::<gio::DesktopAppInfo>() {
-                Err(_) => None,
-                Ok(item) => {
-                    let actions = item.list_actions();
-                    if actions.is_empty() {
-                        None
-                    } else {
-                        Some(actions)
-                    }
-                } //None
+            actions: {
+                let actions = app.list_actions();
+                if actions.is_empty() {
+                    None
+                } else {
+                    Some(actions)
+                }
             },
             icon: match &app.icon() {
                 None => None,
