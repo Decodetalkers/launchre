@@ -1,12 +1,12 @@
 use slint::Model;
 use slint::VecModel;
 use zbus::blocking::ConnectionBuilder;
-use zbus::dbus_interface;
+use zbus::interface;
 use zbus::Result;
 slint::include_modules!();
 mod applications;
 struct Utena;
-#[dbus_interface(name = "org.revolution.utena")]
+#[interface(name = "org.revolution.utena")]
 impl Utena {}
 fn main() -> Result<()> {
     match ConnectionBuilder::session()?
