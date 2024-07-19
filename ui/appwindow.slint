@@ -16,11 +16,11 @@ struct Cats {
 }
 
 export component AppWindow inherits Window {
-    property <[MyItem]> items ;
-    in property <[Cats]> cats ;
-    in property <image> defaultimage : @image-url("../assert/revolution.png");
+    property <[MyItem]> items;
+    in property <[Cats]> cats;
+    in property <image> defaultimage: @image-url("../assert/revolution.png");
     callback request-start-app(int);
-    callback request-start-app-with-action(int,string);
+    callback request-start-app-with-action(int, string);
     callback request-fillter(string);
     callback request-fillter-with-cats(string, [Cats]);
     callback request-exit();
@@ -59,7 +59,7 @@ export component AppWindow inherits Window {
                 mainlist.current-item = items.length - 1;
                 mainlist.viewport-y = -1 * mainlist.current-item * 112px;
                 mainlist.current-selected = items[mainlist.current-item].index;
-            } else if (event.text == Key.Return && mainlist.current-selected != -1 )  {
+            } else if (event.text == Key.Return && mainlist.current-selected != -1) {
                 if (items[mainlist.current-item].actionchoosed == "default") {
                     request-start-app(mainlist.current-selected);
                 } else {
@@ -71,15 +71,16 @@ export component AppWindow inherits Window {
             accept
         }
     }
+
     HorizontalBox {
         VerticalBox {
             HorizontalLayout {
-                searchline := LineEdit { 
+                searchline := LineEdit {
                     placeholder-text: "世界に革命を起こす力をください";
                     font-size: 20px;
                     edited => {
                         // if is advanced
-                        if(check.checked) {
+                        if (check.checked) {
                             request-fillter-with-cats(self.text,cats);
                         } else {
                             request-fillter(self.text);
@@ -95,6 +96,7 @@ export component AppWindow inherits Window {
                         return;
                     }
                 }
+
                 check := CheckBox {
                     text: "advanced";
                     checked: false;
@@ -110,6 +112,7 @@ export component AppWindow inherits Window {
                         mainlist.current-selected = -1;
                     }
                 }
+
                 image := Image {
                     source: root.defaultimage;
                     width: 36px;
@@ -117,23 +120,31 @@ export component AppWindow inherits Window {
                     rotation-angle: 0deg;
                 }
             }
-            if check.checked : HorizontalBox {
+
+            if check.checked: HorizontalBox {
                 ScrollView {
                     height: 70px;
                     HorizontalBox {
                         spacing: 0px;
-                        for cat in cats  : Rectangle {
+                        for cat in cats: Rectangle {
                             visible: cat.selected;
                             border-width: 2px;
                             width: cat.selected ? 160px : 0px;
                             background: Colors.pink;
                             border-radius: cat.selected ? 15px : 0px;
                             border-color: Colors.transparent;
-                            if cat.selected : HorizontalBox { 
-                                Image { source: root.defaultimage; height: 20px; width: 20px; }
-                                Text { text: cat.cat; }
+                            if cat.selected: HorizontalBox {
+                                Image {
+                                    source: root.defaultimage;
+                                    height: 20px;
+                                    width: 20px;
+                                }
+
+                                Text {
+                                    text: cat.cat;
+                                }
                             }
-                            if cat.selected : TouchArea {
+                            if cat.selected: TouchArea {
                                 width: parent.width;
                                 height: parent.height;
                                 clicked => {
@@ -147,22 +158,30 @@ export component AppWindow inherits Window {
                         }
                     }
                 }
-                ScrollView { 
+
+                ScrollView {
                     height: 70px;
                     HorizontalBox {
                         spacing: 0px;
-                        for cat in cats  : Rectangle {
+                        for cat in cats: Rectangle {
                             visible: !cat.selected;
                             border-width: 2px;
                             border-color: Colors.transparent;
                             width: cat.selected ? 0px : 160px;
                             background: Colors.grey;
                             border-radius: cat.selected ? 0px : 15px;
-                            if !cat.selected : HorizontalBox { 
-                                Image { source: root.defaultimage; height: 20px; width: 20px; }
-                                Text { text: cat.cat; }
+                            if !cat.selected: HorizontalBox {
+                                Image {
+                                    source: root.defaultimage;
+                                    height: 20px;
+                                    width: 20px;
+                                }
+
+                                Text {
+                                    text: cat.cat;
+                                }
                             }
-                            if !cat.selected : TouchArea {
+                            if !cat.selected: TouchArea {
                                 width: parent.width;
                                 height: parent.height;
                                 clicked => {
@@ -178,13 +197,11 @@ export component AppWindow inherits Window {
                 }
             }
             mainlist := ListView {
-                has-focus:true;
-                property <int> current-item : -1 ;
+                has-focus: true;
+                property <int> current-item: -1;
                 property <int> current-selected: -1;
-                for item[idx] in items : Rectangle {
-                    background: idx == mainlist.current-item ? Colors.grey 
-                        : touch.has-hover ? Colors.dimgrey
-                        : root.background;
+                for item[idx] in items: Rectangle {
+                    background: idx == mainlist.current-item ? Colors.grey : touch.has-hover ? Colors.dimgrey : root.background;
                     HorizontalLayout {
                         VerticalBox {
                             spacing: 10px;
@@ -194,20 +211,22 @@ export component AppWindow inherits Window {
                                 height: 100px;
                             }
                         }
+
                         VerticalBox {
                             Text {
                                 text: item.title;
                                 font-weight: 10;
                                 font-size: 20px;
                             }
+
                             Text {
                                 text: item.description;
                                 font-weight: 1;
                                 font-size: 10px;
                             }
-
                         }
                     }
+
                     touch := TouchArea {
                         width: parent.width;
                         height: 70px;
@@ -222,14 +241,16 @@ export component AppWindow inherits Window {
                 }
             }
         }
-        if mainlist.current-item >= 0 :  VerticalBox {
+
+        if mainlist.current-item >= 0:  VerticalBox {
             spacing: 3px;
             visible: mainlist.current-item >= 0;
-            width:  270px ;
+            width: 270px;
             Image {
-                source: items[mainlist.current-item].icon ;
+                source: items[mainlist.current-item].icon;
             }
-            if items[mainlist.current-item].hasactions == true : Text {
+
+            if items[mainlist.current-item].hasactions == true: Text {
                 text: "actions";
                 horizontal-alignment: center;
                 font-size: 20px;
@@ -246,6 +267,7 @@ export component AppWindow inherits Window {
                         items[mainlist.current-item].actionchoosed = text;
                     }
                 }
+
                 Button {
                     text: "Run";
                     width: 70px;
@@ -259,16 +281,18 @@ export component AppWindow inherits Window {
                     }
                 }
             }
+
             Text {
                 text: "supported types";
                 horizontal-alignment: center;
                 font-size: 20px;
                 font-weight: 5;
             }
-            StandardListView{
-                model:items[mainlist.current-item].supported_types;
+
+            StandardListView {
+                model: items[mainlist.current-item].supported_types;
                 forward-focus: key-handle;
-                key-handle := FocusScope { 
+                key-handle := FocusScope {
                     key-pressed(event) => {
                         if (event.text == Key.Escape) {
                             root.focus();
@@ -277,21 +301,30 @@ export component AppWindow inherits Window {
                     }
                 }
             }
+
             Text {
                 text: "Categrades";
                 horizontal-alignment: center;
                 font-size: 20px;
                 font-weight: 5;
             }
+
             ScrollView {
                 height: 70px;
                 HorizontalBox {
-                    for cat in items[mainlist.current-item].categrades : Rectangle {
+                    for cat in items[mainlist.current-item].categrades: Rectangle {
                         background: Colors.pink;
                         border-radius: 15px;
-                        HorizontalBox { 
-                            Image { source: root.defaultimage; height: 20px; width: 20px; }
-                            Text { text: cat; }
+                        HorizontalBox {
+                            Image {
+                                source: root.defaultimage;
+                                height: 20px;
+                                width: 20px;
+                            }
+
+                            Text {
+                                text: cat;
+                            }
                         }
                     }
                 }
