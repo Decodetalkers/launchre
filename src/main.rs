@@ -1,6 +1,6 @@
 use slint::Model;
 use slint::VecModel;
-use zbus::blocking::ConnectionBuilder;
+use zbus::blocking::connection;
 use zbus::interface;
 use zbus::Result;
 slint::include_modules!();
@@ -9,7 +9,7 @@ struct Utena;
 #[interface(name = "org.revolution.utena")]
 impl Utena {}
 fn main() -> Result<()> {
-    match ConnectionBuilder::session()?
+    match connection::Builder::session()?
         .name("org.revolution.utena")?
         .serve_at("/org/revolution/utena", Utena)?
         .build()
